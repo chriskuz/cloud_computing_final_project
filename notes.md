@@ -1,0 +1,4 @@
+- make account
+- sign in as a root user (for this case, do not use an IAM)..;.be a root user
+- there may be an eligible option online that promotes a free-tier subscription. some are available for 1 year
+- we want to find a menu such as this one
