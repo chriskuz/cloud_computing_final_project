@@ -38,12 +38,12 @@ Here, we will create an instance directly through the platform of AWS housed wit
 
 Upon signing into your AWS account, you should see a menu similar to the one shown in <font color="gree">IMAGE 01</font>. This is a main hub that has several different services you can access and navigate to. Some of these services are limited if you are using the free-tier subscription. 
 
-It's important on the top right of the hub that you see in <font color="gree">IMAGE 01</font> that you specify the desired region for your server. We zoom in to show this on the absolute top right of <font color="gree">IMAGE 02</font> to which we changed the region to "N. Virginia", whereas previously on <font color="gree">IMAGE 01</font> it was initially set to Ohio in the top right.
+It's important on the top right of the hub that you see in <font color="gree">IMAGE 01</font> that you specify the desired region for your server. We zoom in to show this on the absolute top right of <font color="gree">IMAGE 02</font> to which we changed the region to "N. Virginia", whereas previously on <font color="gree">**IMAGE 01**</font> it was initially set to Ohio in the top right.
 
 <font color="gree">**IMAGE 02**</font>
 ![i02](pics/i02_aws_region.png)
 
-After specifying the region, we will then want to access the AWS service that gives us the power to create virtual machiness. This service is called "EC2". To find EC2, use the search bar present at the top of your hub to look for it and select the most generic menu option for EC2. For reference, observe the top of <font color="gree">IMAGE 01</font> for the location of your search bar.
+After specifying the region, we will then want to access the AWS service that gives us the power to create virtual machiness. This service is called "EC2". To find EC2, use the search bar present at the top of your hub to look for it and select the most generic menu option for EC2. For reference, observe the top of <font color="gree">**IMAGE 01**</font> for the location of your search bar.
 
 ## EC2
 
@@ -54,19 +54,19 @@ When entering the EC2 hub, you should notice your menu looking similar to <font 
 <font color="gree">**IMAGE 03**</font>
 ![i03](pics/i03_ec2_menu.png)
 
-This EC2 control center offers a flexible amount of options for configuring VM instances and can provide some basic KPIs on any existing instances or previous configurations. Today, we will only go through a basic setup and running of a small instnace with some small mentions on key pairing and security specifications. To open a menu that allows us to set up and spin a server, we chose to select "Instances" and then select "Launch Instance" as seen in <font color="gree">IMAGE 04</font>. However, the same process could be executed similarly by first selecting "Instances (running)" and then selecting the golden "Launch Instance" in that following menu. Or to bypass all of this and go directly into the menu we want, you can just select "Launch Instance" from the EC2 hub. 
+This EC2 control center offers a flexible amount of options for configuring VM instances and can provide some basic KPIs on any existing instances or previous configurations. Today, we will only go through a basic setup and running of a small instnace with some small mentions on key pairing and security specifications. To open a menu that allows us to set up and spin a server, we chose to select "Instances" and then select "Launch Instance" as seen in <font color="gree">**IMAGE 04**</font>. However, the same process could be executed similarly by first selecting "Instances (running)" and then selecting the golden "Launch Instance" in that following menu. Or to bypass all of this and go directly into the menu we want, you can just select "Launch Instance" from the EC2 hub. 
 
-From the EC2 hub shown in <font color="gree">IMAGE 03</font>, choosing "Instances" or "Instances (running)" would tease us with a menu that showcases your historically made and ready-to-run instances that we would later see referenced similarly in <font color="gree">IMAGE 06</font>. The "(running)" option is just an auto-filter that takes you to that same menu, but automatically applied a filter to the menu to showcase which VMs are currently running. If you ever create an instance in EC2 and observe this menu, but don't see your instance, be sure to double check what filters you have applied as it may hide some results you are looking for. 
+From the EC2 hub shown in <font color="gree">**IMAGE 03**</font>, choosing "Instances" or "Instances (running)" would tease us with a menu that showcases your historically made and ready-to-run instances that we would later see referenced similarly in <font color="gree">**IMAGE 06**</font>. The "(running)" option is just an auto-filter that takes you to that same menu, but automatically applied a filter to the menu to showcase which VMs are currently running. If you ever create an instance in EC2 and observe this menu, but don't see your instance, be sure to double check what filters you have applied as it may hide some results you are looking for. 
 
 <font color="gree">**IMAGE 04**</font>
 ![i04](pics/i04_instances_menu.png)
 
-Now we observe the below gif, <font color="gree">GIF 00</font>...
+Now we observe the below gif, <font color="gree">**GIF 00**</font>...
 
 <font color="gree">**GIF 00**</font>
 ![g00](pics/g00_gui_instance_creation.gif)
 
-<font color="gree">GIF 00</font> takes us through some of the initial settings of EC2's instance creation. Here we deicde to populate the "Name and Tags" field with a custom name for our instance. In this case, we name our instance `00_gui_launched_instance`. 
+<font color="gree">**GIF 00**</font> takes us through some of the initial settings of EC2's instance creation. Here we deicde to populate the "Name and Tags" field with a custom name for our instance. In this case, we name our instance `00_gui_launched_instance`. 
 
 As you scroll a little lower, you will find that you can select various different OS options and today we decide to select an Ubuntu image (AMI) and change our verion to "Ubuntu 22.04 LTS". This version of Ubuntu is not the most updated version and scaled a few versions back, however this is done to ensure we are not going to encounter any "new-version" bugs that may be present with the latest version of software. This is considered more legacy, but otherwise thought of to be "tried-and-true." It's important to notice here that Amazon will also dictate which options we have on a free-tier eligibility, which limits our options, but does not prevent us from accomplishing out goals. 
 
@@ -95,19 +95,105 @@ google_compute_engine			id_rsa					known_hosts.old
 google_compute_engine.pub		id_rsa.pub
 ```
 
+Observe through <font color="gold">**OUTPUT 00**</font> the items found within the `.ssh` folder. These objects found in the output folder are objects from previous ssh connections via Google Cloud and other known hosts. 
+
 <font color="gree">**IMAGE 05**</font>
 ![i05](pics/i05_firewall.png)
+
+<font color="gree">**IMAGE 05**</font> is another important component needing to be considered when spinning up an instance through this platform and is found beyond the key pairing menu upon scrolling down. For our purpose it's important to make a customer security group for the firewall. Here you should select the box to allow SSH traffic and adjust the option to "My IP" which will call upon your public IPv4 address. This selection ensures that you and only you can be the one to access your server directly. At the same time, for testing out a todolist application (which we hope to achieve before submission), you will also want to allow HTTP traffic from the internet so that appropriate protocol messaging can occur. 
+
+To double check your IPv4 public address, in your MacOS terminal you can enter the below commands and verify the output...
+
+<font color="skyblue">**INPUT 01**</font>
+```
+(base) chriskuzemka@Mac ~ % curl ipv4.icanhazip.com
+```
+
+
+<font color="gold">**OUTPUT 01**</font>
+```
+74.73.86.110
+```
+
+Scrolling down further, you will see a button that will generate your instance. It may take a few moments to generate, but you should jump into the menu seen in <font color="gree">**IMAGE 06**</font> where all of your instances are shown. If you don't recall this menu, return to comments above regarding the EC2 hub seen in <font color="gree">**IMAGE 03**</font> and how to navigate from there to a page showcasing all of your generated instances. 
 
 <font color="gree">**IMAGE 06**</font>
 ![i06](pics/i06_instance_menu_IP.png)
 
+In <font color="gree">**IMAGE 06**</font>, we zoom in to the running instance and select it with a check mark to pull up information regarding its existence. In the Details tab shown on the bottom of this image, you notice a "Public IPv4 address." This address will be important for accessing your server from your local machine, assuming that the instructions above were followed correctly and verified. 
+
+## Accessing your Instance
+
+You will want to click the copy icon to copy this external server IP to be used in the next commands. These next commands we showcase will involve how to access your server...
+
+Please take note of the changing colors of the <font color="skyblue">**INPUT**</font> comannds from <font color="skyblue">skyblue</font> to <font color="violet">violet</font>. The <font color="violet">violet **INPUT**</font> commands will indicate what commands are put into the terminal that correspond to work being done on the cloud. 
+
+<font color="skyblue">**INPUT 02**</font>
+```
+(base) chriskuzemka@Chriss-MacBook-Pro-9 .ssh % ssh -i ~/.ssh/00_gui_launched_instance_KEY.pem ubuntu@204.236.206.229    
+
+The authenticity of host '204.236.206.229 (204.236.206.229)' can't be established.
+ED25519 key fingerprint is SHA256:JbAq1ufvvUtTtiyqohEBFwiWrIwbU42gIohQAd/h6hQ.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+```
+<font color="GOLD">**OUTPUT 02**</font>
+```
+Warning: Permanently added '204.236.206.229' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.8.0-1029-aws x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue Aug  5 02:01:55 UTC 2025
+
+  System load:  0.08              Processes:             102
+  Usage of /:   22.1% of 7.57GB   Users logged in:       0
+  Memory usage: 24%               IPv4 address for ens5: 172.31.43.49
+  Swap usage:   0%
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+ubuntu@ip-172-31-43-49:~$
+```
+
+In <font color="skyblue">**INPUT 02**</font>, we use the command: `ssh -i ~/.ssh/00_gui_launched_instance_KEY.pem ubuntu@204.236.206.229`. This command leverages the correctly setup `ssh` protocol to access our server from a local terminal. Through this protocol we invoke on the downloaded and stored `.pem` file, which is our specific AWS private RSA key that accesses our server, to tie in as an access key for the target public IPv4 address of the server. Since we installed Ubuntu and unless otherwise specified, we use `ubuntu` as our direct username `@` the IP address of our server. 
+
+## On Cloud 
+
+<font color="violet">**INPUT 03**</font>
+```
+ubuntu@ip-172-31-43-49:~$ sudo su
+root@ip-172-31-43-49:/home/ubuntu#
+```
 
 ![i01]()
 
 # Installing the AWS CLI
 
-- installing cli [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-    - follow the all users installation for the command line
+This section discusses the installation of the AWS CLI interface which can be used optimally for shell scripts. [The official guide for installation could be found from this link.](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- follow the all users installation for the command line
 
 <font color="skyblue">**INPUT 00**</font>
 
