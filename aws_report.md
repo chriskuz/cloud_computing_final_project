@@ -180,13 +180,34 @@ ubuntu@ip-172-31-43-49:~$
 
 In <font color="skyblue">**INPUT 02**</font>, we use the command: `ssh -i ~/.ssh/00_gui_launched_instance_KEY.pem ubuntu@204.236.206.229`. This command leverages the correctly setup `ssh` protocol to access our server from a local terminal. Through this protocol we invoke on the downloaded and stored `.pem` file, which is our specific AWS private RSA key that accesses our server, to tie in as an access key for the target public IPv4 address of the server. Since we installed Ubuntu and unless otherwise specified, we use `ubuntu` as our direct username `@` the IP address of our server. 
 
-## On Cloud 
+# On Cloud 
+
+## Setup 
+
+On this instance, we showcase some simple commands that help update our system to run Python programs. The first thing that can be done is to switch to the `root` user, by running the below command. 
 
 <font color="violet">**INPUT 03**</font>
 ```
 ubuntu@ip-172-31-43-49:~$ sudo su
 root@ip-172-31-43-49:/home/ubuntu#
 ```
+
+After doing such, you can run commands and respond `y`/`yes` accordingly to various installations. We particularly update the `apt` toolkit, install `pip3`, install `flask`, and install `vim` (just in case we need a native editor). <font color="violet">**INPUT 04**</font> will showcase various inputs conducted at different instances post different corresponding installations. We truncate our interaction with the terminal to avoid overpopulating text here. Therefore, it is expected to see outputs in your terminal reflective of installations and intended to not see the disclosed output here. 
+
+<font color="violet">**INPUT 04**</font>
+```
+root@ip-172-31-43-49:/home/ubuntu# apt-get update
+
+root@ip-172-31-43-49:/home/ubuntu# apt install python3-pip
+
+root@ip-172-31-43-49:/home/ubuntu# pip install flask
+
+root@ip-172-31-43-49:/home/ubuntu# apt install vim
+```
+
+## Testing a Program on Your Instance
+
+
 
 ![i01]()
 
