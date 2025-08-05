@@ -1,0 +1,9 @@
+# Cloud Computing Summer 2025  Project Repository
+
+This repository is a small accessible repository that attempts to satisfy the guidelines of Fordham University's Cloud Computing Course's Final submission. Here, you will find only a few files and possibly a test script (if accomplished before submission deadline). 
+
+The PDF report included is a report that discusses the essance of cloud computing as understood through the course. It covers the topics of web-servicing and virtualization as key concepts to rally the definitiion of cloud computing and includes practical examples of how these concepts are used today in industry. 
+
+The `aws_report.md` files is a walkthrough of how a user can spin up a VM instance of AWS on their own and access such for manipulation through a localized terminal. Here it covers the AWS GUI and navigates over how to leverag EC2 for a free-tier based server spinup. It also covers how to download and install Amazon's CLI for local usage. **It is important to note here that the document references media pulled from a `pics` directory that is excluded from the remote Github repository for best practice in usage of storage. This is shown through the `.gitignore` file. To download this `pics` directory, [a user should visit this link and store the `pics` directory at the root level of the repository so that reference links in the `aws_report.md` file do not break and appripriately bring in the pictures.]()** 
+
+When it comes to opening the Markdown files, it is best suggested a user views the file through a dedicated "Preview" editor, such as that offered in native Visual Studio Code. The `aws_report.md` file uses colors that were tested to operate in a dark-mode environment and it is best suggested to view this report within dark-mode or otherwise turn-off/ignore the any usage of HTML based `font` color commands.
