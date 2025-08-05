@@ -116,7 +116,7 @@ root@ip-172-31-43-49:/home/ubuntu#
 - apt update
 - pip3 installed
 - flask installation
-
+- installed vim
 
 # CLI Installer
 
