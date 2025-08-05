@@ -100,6 +100,24 @@ See "man sudo_root" for details.
 ubuntu@ip-172-31-43-49:~$
 ```
 
+- switch to root for most access
+
+- we want to update things here now...
+
+
+<font color="violet">**INPUT 03**</font>
+
+```
+ubuntu@ip-172-31-43-49:~$ sudo su
+root@ip-172-31-43-49:/home/ubuntu#
+```
+
+
+- apt update
+- pip3 installed
+- flask installation
+
+
 # CLI Installer
 
 - installing cli [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
