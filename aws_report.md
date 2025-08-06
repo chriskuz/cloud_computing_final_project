@@ -12,7 +12,6 @@ In this course, we learned how to leverage Google Cloud to deploy simplistic pro
 - <font color="violet">Violet INPUT headers designate user-guided input sections on cloud. Note, some trivial outputs are included in these INPUT sections.</font>
 - <font color="gold">Gold OUTPUT headers designate terminal/shell outputs the user would see. Note, there may exist some differences between these ntoes and the user's actual screen.</font>
 - <font color="gree">Green titles reference images and relevant embedded media.</font>
-- <font color="red">Red notes are comments on error/inefficiency in process </font>
 
 # AWS 
 
@@ -36,9 +35,9 @@ Here, we will create an instance directly through the platform of AWS housed wit
 <font color="gree">**IMAGE 01**</font>
 ![i01](pics/i01_aws_home.png)
 
-Upon signing into your AWS account, you should see a menu similar to the one shown in <font color="gree">IMAGE 01</font>. This is a main hub that has several different services you can access and navigate to. Some of these services are limited if you are using the free-tier subscription. 
+Upon signing into your AWS account, you should see a menu similar to the one shown in <font color="gree">**IMAGE 01**</font>. This is a main hub that has several different services you can access and navigate to. Some of these services are limited if you are using the free-tier subscription. 
 
-It's important on the top right of the hub that you see in <font color="gree">IMAGE 01</font> that you specify the desired region for your server. We zoom in to show this on the absolute top right of <font color="gree">IMAGE 02</font> to which we changed the region to "N. Virginia", whereas previously on <font color="gree">**IMAGE 01**</font> it was initially set to Ohio in the top right.
+It's important on the top right of the hub that you see in <font color="gree">**IMAGE 01**</font> that you specify the desired region for your server. We zoom in to show this on the absolute top right of <font color="gree">IMAGE 02</font> to which we changed the region to "N. Virginia", whereas previously on <font color="gree">**IMAGE 01**</font> it was initially set to Ohio in the top right.
 
 <font color="gree">**IMAGE 02**</font>
 ![i02](pics/i02_aws_region.png)
@@ -49,7 +48,7 @@ After specifying the region, we will then want to access the AWS service that gi
 
 EC2 (Elastic Compute Cloud), is Amazon's "rent-a-computer-remotely" service offered through their AWS platform. It allows anyone with an eligible account to quickly spin up servers with easy scalability non-locally. 
 
-When entering the EC2 hub, you should notice your menu looking similar to <font color="gree">IMAGE 03. </font>
+When entering the EC2 hub, you should notice your menu looking similar to <font color="gree">**IMAGE 03**</font>.
 
 <font color="gree">**IMAGE 03**</font>
 ![i03](pics/i03_ec2_menu.png)
@@ -100,7 +99,7 @@ Observe through <font color="gold">**OUTPUT 00**</font> the items found within t
 <font color="gree">**IMAGE 05**</font>
 ![i05](pics/i05_firewall.png)
 
-<font color="gree">**IMAGE 05**</font> is another important component needing to be considered when spinning up an instance through this platform and is found beyond the key pairing menu upon scrolling down. For our purpose it's important to make a customer security group for the firewall. Here you should select the box to allow SSH traffic and adjust the option to "My IP" which will call upon your public IPv4 address. This selection ensures that you and only you can be the one to access your server directly. At the same time, for testing out a todolist application (which we hope to achieve before submission), you will also want to allow HTTP traffic from the internet so that appropriate protocol messaging can occur. 
+<font color="gree">**IMAGE 05**</font> is another important component needing to be considered when spinning up an instance through this platform and is found beyond the key pairing menu upon scrolling down. For our purpose it's important to make a customer security group for the firewall. Here you should select the box to allow SSH traffic and adjust the option to "My IP" which will call upon your public IPv4 address. This selection ensures that you and only you can be the one to access your server directly. At the same time, for testing out a todolist application, you will also want to allow HTTP traffic from the internet so that appropriate protocol messaging can occur. 
 
 To double check your IPv4 public address, in your MacOS terminal you can enter the below commands and verify the output...
 

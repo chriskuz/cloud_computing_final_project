@@ -1,6 +1,6 @@
 # Cloud Computing Summer 2025  Project Repository
 
-This repository is a small accessible repository that attempts to satisfy the guidelines of Fordham University's Cloud Computing Course's Final submission. Here, you will find only a few files and possibly a test script (if accomplished before submission deadline). 
+This repository is a small accessible repository that attempts to satisfy the guidelines of Fordham University's Cloud Computing Course's Final submission. Here, you will find only a few files and files used as a sample web application. 
 
 The PDF report included is a report that discusses the essance of cloud computing as understood through the course. It covers the topics of web-servicing and virtualization as key concepts to rally the definitiion of cloud computing and includes practical examples of how these concepts are used today in industry. 
 
