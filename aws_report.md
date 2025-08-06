@@ -180,7 +180,7 @@ ubuntu@ip-172-31-43-49:~$
 
 In <font color="skyblue">**INPUT 02**</font>, we use the command: `ssh -i ~/.ssh/00_gui_launched_instance_KEY.pem ubuntu@204.236.206.229`. This command leverages the correctly setup `ssh` protocol to access our server from a local terminal. Through this protocol we invoke on the downloaded and stored `.pem` file, which is our specific AWS private RSA key that accesses our server, to tie in as an access key for the target public IPv4 address of the server. Since we installed Ubuntu and unless otherwise specified, we use `ubuntu` as our direct username `@` the IP address of our server. 
 
-# On Cloud 
+# On Cloud (Part I)
 
 ## Setup 
 
@@ -204,26 +204,24 @@ root@ip-172-31-43-49:/home/ubuntu# pip install flask
 
 root@ip-172-31-43-49:/home/ubuntu# apt install vim
 ```
+Next we will cover quickly how to install the AWS CLI so that we can use it to move a file onto our cloud. We will also cover how to use the AWS CLI to spin up your instance so that it is possible to understand how we can eventually leverage an AWS CLI in a shell script that can automate the process of scaling. 
 
-## Testing a Program on Your Instance
-
-
-
-![i01]()
+The previous steps were meant to showcase the basics of AWS through it front-facing platform. It may seem like we are jumping around (which we are!), but this is all in the effort to learn different aspects of AWS. 
 
 # Installing the AWS CLI
 
 This section discusses the installation of the AWS CLI interface which can be used optimally for shell scripts. [The official guide for installation could be found from this link.](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-- follow the all users installation for the command line
 
-<font color="skyblue">**INPUT 00**</font>
+There are several unique commands that can be used to download a form of the AWS CLI. For this case, we leverage the commands and steps to install the CLI on MacOS for "All Users". Observe the next few commands. Take note of the colors of out <font color="skyblue">**INPUTS**</font>. It's best recommended to do this in a new terminal. 
+
+<font color="skyblue">**INPUT 05**</font>
 
 ```
 (base) chriskuzemka@Mac ~ % curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 sudo installer -pkg AWSCLIV2.pkg -target /
 ```
 
-<font color="gold">**OUTPUT 00**</font>
+<font color="gold">**OUTPUT 05**</font>
 
 ```
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -235,16 +233,74 @@ installer: Installing at base path /
 installer: The install was successful.
 ```
 
-<font color="skyblue">**INPUT 01**</font>
+<font color="skyblue">**INPUT 06**</font>
 
 ```
 (base) chriskuzemka@Mac ~ % which aws
 aws --version
 ```
 
-<font color="gold">**OUTPUT 01**</font>
+<font color="gold">**OUTPUT 06**</font>
 
 ```
 /usr/local/bin/aws
 aws-cli/2.28.2 Python/3.13.4 Darwin/24.5.0 exe/x86_64
 ```
+
+Now that we verified the installation of AWS CLI, we want to authenticate our access to our account. If following along the AWS CLI installation, you will notice that it shall recommend you use an IAM to access your instances from terminal with the CLI. However, this isn't necessary and for our case, we won't be doing such. It is possible for us to make this access key as a root user. 
+
+<font color="gree">**IMAGE 07**</font>
+![i06](pics/i07_redacted_account_details.png)
+
+Based off <font color="gree">**IMAGE 07**</font>, you will want to open your AWS portal and navigate to the top right to find "Security credentials". This will bring you to a new menu where you can generate various forms of keys and assign different roles. Scroll down...
+
+<font color="gree">**IMAGE 08**</font>
+![i06](pics/i08_create_access_key_menu.png)
+
+<font color="gree">**IMAGE 09**</font>
+![i06](pics/i09_root_user_access_key_creation.png)
+
+The above <font color="gree">**IMAGE 08**</font> displays a sub-menu in your scroll that has the option to create the access key and when clicking on the transparent "Create access key" on the top right, you'll open a new menu that looks like the above <font color="gree">**IMAGE 09**</font>. Note that AWS is warning against the use of a root access key. This is not an issue for us to resolve today, but it is important to learn how to set up an IAM to allow flexible access among multiple developers onto a single server. 
+
+Check the box and proceed with clicking the golden colored "Create access key" button on the bottom right of your screen as shown in <font color="gree">**IMAGE 09**</font>
+
+<font color="gree">**IMAGE 10**</font>
+![i06](pics/i10_root_user_access_keys.png)
+
+Now you shoud find yourself at a new page that displays your access keys. **THIS IS VERY SENSITIVE INFORMATION.** For the sake of this documentation, the access keys were redacted from <font color="gree">**IMAGE 10**</font>. Keep this page open for now and do not close it until you enter them as credentials into your terminal. 
+
+The next local <font color="skyblue">**INPUTS**</font> and <font color="gold">**OUTPUTS**</font> will showcase where you must enter these credentials. Observe below. 
+
+
+<font color="skyblue">**INPUT 07**</font>
+```
+(base) chriskuzemka@Mac ~ % aws configure  
+```
+
+<font color="gold">**OUTPUTS 07**</font>
+```
+AWS Access Key ID [None]:     <your access key ID>
+AWS Secret Access Key [None]: <your secret key>
+Default region name [None]:   us-east-1
+Default output format [None]: json
+```
+
+Above, we have opened our own local configuration file that is set with the AWS CLI. Corresponding to the incremental outputs of <font color="gold">**OUTPUTS 07**</font> (which are truncated samples of what you would see), enter the credentials where appropriate. 
+
+AWS states best practices for how to manage these keys, inclusive of the option to download a `.csv` file for them. If you try to change this page, select "Done", or close your browser then AWS will provide you a warning if you chose not to download their `.csv` file. The "Secret acces key" in particular will not be stored anywhere within your portal and effectively will be lost remotely. However, should you completely lose this key and not have you configuration file not properly set, this is not the biggest issue. So long as you are signed into your account as a root user, you have the power through the portal to deactivate and delete keys within the same page "Security" page and sub-menu shown per <font color="gree">**IMAGE 08**</font>. 
+
+Regarding setting the location, note that earlier we specified the region much earlier in this documentation. Also note in <font color="gree">**IMAGE 11**</font>, within our instances page that the location of our VM is set to `us-east-1a`. In our testing (which may be different for you), we initially applied the full server location of `us-east-1a` for this credential. This yielded a broken URL endpoint. What fixes this issue is to remove the suffix character `a`. This properly set the region of our instance. You may experience a similar issue and this correct way of setting a sup-region corresponding to the sub-region of your server may fix any potential issues. 
+
+Finally, you can specify the output format which is nothing more than how information around your instances is displayed in terminal. It will not affect any web application you wish to deploy unless you are using a script that directly must wrangle the information output from the AWS CLI. In this case, we left this as default which was `json` output. 
+
+<font color="gree">**IMAGE 11**</font>
+![i06](pics/i11_instance_location.png)
+
+If this was all set properly, you can now see your instance(s) by running the next input..
+
+<font color="skyblue">**INPUT 08**</font>
+```
+(base) chriskuzemka@Mac ~ % aws ec2 describe-instances
+```
+
+This command should yield a very large JSON formatted output describing qualities of your instance. 
