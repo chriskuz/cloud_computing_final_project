@@ -180,7 +180,7 @@ ubuntu@ip-172-31-43-49:~$
 
 In <font color="skyblue">**INPUT 02**</font>, we use the command: `ssh -i ~/.ssh/00_gui_launched_instance_KEY.pem ubuntu@204.236.206.229`. This command leverages the correctly setup `ssh` protocol to access our server from a local terminal. Through this protocol we invoke on the downloaded and stored `.pem` file, which is our specific AWS private RSA key that accesses our server, to tie in as an access key for the target public IPv4 address of the server. Since we installed Ubuntu and unless otherwise specified, we use `ubuntu` as our direct username `@` the IP address of our server. 
 
-# On Cloud (Part I)
+# On Cloud
 
 ## Setup 
 
@@ -204,24 +204,162 @@ root@ip-172-31-43-49:/home/ubuntu# pip install flask
 
 root@ip-172-31-43-49:/home/ubuntu# apt install vim
 ```
-Next we will cover quickly how to install the AWS CLI so that we can use it to move a file onto our cloud. We will also cover how to use the AWS CLI to spin up your instance so that it is possible to understand how we can eventually leverage an AWS CLI in a shell script that can automate the process of scaling. 
 
-The previous steps were meant to showcase the basics of AWS through it front-facing platform. It may seem like we are jumping around (which we are!), but this is all in the effort to learn different aspects of AWS. 
+Above we showcase how to access our terminal locally and we have updated some packages. Let's `exit` the cloud momentarily and begin moving over a project onto the cloud instead. 
 
-# Installing the AWS CLI
+<font color="skyblue">**INPUT 05**</font>
+```
+root@ip-172-31-43-49:/home/ubuntu# exit
+exit
+
+ubuntu@ip-172-31-43-49:~$ exit
+logout
+Connection to 34.204.94.1 closed.
+```
+
+Note how the IP address is different here than previous commands. This callout specifically is meant to highlight how we actually spun up our instance after shutting it down a different day (the report took more than one day to write). The external IP address will typically change whenever the instance is spun up and down due to many variables, but mainly due to avialbaility of a machine.  
+
+Continuing, you now should either navigate to the folder where this project resides or call upon the full file PATH of the project to pull in corresponding files for upload (more recommended you move first to the root of the repository where the files exist to warrant less typing). 
+
+<font color="skyblue">**INPUT 06**</font>
+```
+(base) chriskuzemka@Mac cloud_computing_final_project % scp -i ~/.ssh/00_gui_launched_instance_KEY.pem -r todolist.py todolist.db templates ubuntu@34.204.94.1:~
+```
+
+Now jump back into your cloud the same way you did before. We are going to adjust the file and set the port to 80 to run. Pay attention to these next commands. We are going to use `vim` which should be installed per previous directions. This will allow us to edit our `todolist.py` file. Within vim we will want to change the last line of this Python file to specify an output port of 80. This should be an open port on your server, if you allowed HTTP traffic upon instance setup. 
+
+Aside: use this time to also check if Python3 is installed.
+
+<font color="violet">**INPUT 07**</font>
+```
+root@ip-172-31-43-49:/home/ubuntu# ls
+templates  todolist.db  todolist.py
+
+root@ip-172-31-43-49:/home/ubuntu# cat todolist.py
+```
+
+<font color="gold">**OUTPUT 07**</font>
+```
+# This is a simple example web app that is meant to illustrate the basics.
+from flask import Flask, render_template, redirect, g, request, url_for
+import sqlite3
+
+DATABASE = 'todolist.db'
+
+app = Flask(__name__)
+app.config.from_object(__name__)
+
+
+@app.route("/")
+def show_list():
+    db = get_db()
+    cur = db.execute('SELECT what_to_do, due_date, status FROM entries')
+    entries = cur.fetchall()
+    tdlist = [dict(what_to_do=row[0], due_date=row[1], status=row[2])
+              for row in entries]
+    return render_template('index.html', todolist=tdlist)
+
+
+@app.route("/add", methods=['POST'])
+def add_entry():
+    db = get_db()
+    db.execute('insert into entries (what_to_do, due_date) values (?, ?)',
+               [request.form['what_to_do'], request.form['due_date']])
+    db.commit()
+    return redirect(url_for('show_list'))
+
+
+@app.route("/delete/<item>")
+def delete_entry(item):
+    db = get_db()
+    db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
+    db.commit()
+    return redirect(url_for('show_list'))
+
+
+@app.route("/mark/<item>")
+def mark_as_done(item):
+    db = get_db()
+    db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
+    db.commit()
+    return redirect(url_for('show_list'))
+
+
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, 'sqlite_db'):
+        g.sqlite_db = sqlite3.connect(app.config['DATABASE'])
+    return g.sqlite_db
+
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
+
+
+if __name__ == "__main__":
+    app.run("0.0.0.0")
+```
+
+<font color="violet">**INPUT 08**</font>
+```
+root@ip-172-31-43-49:/home/ubuntu# vim todolist.py
+```
+Follow these keystrokes exactly to appropriately navigate `vim`:
+- press `SHIFT+G` to get to the last line
+- press `i` to go to "insert" mode
+- use the cursor to navigate along the last line to change the line `app.run("0.0.0.0")` to `app.run("0.0.0.0", port=80)`
+- press the escape key to exit insert mode
+- press `:wq` to write and quit vim (saves and exits)
+
+Now enter the next command and the sample web application should deploy. 
+
+<font color="violet">**INPUT 09**</font>
+```
+root@ip-172-31-43-49:/home/ubuntu# sudo python3 todolist.py
+```
+
+<font color="gold">**OUTPUT 09**</font>
+```
+ * Serving Flask app 'todolist'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:80
+ * Running on http://172.31.43.49:80
+Press CTRL+C to quit
+```
+
+The above output signifies a successful runtime instance of your web application. However, this doesn't always mean it is accessible as firewall rules could prevent accesss. For our case, there was no trouble-shooting involved as we allowed HTTP traffic, certified our IP as a user, and decided to run on port 80. To access the web application for testing, copy the running external IP address you've been usinig this whole time that allowed access into the server to begin with into a web browser. It is NOT the IPs shown above which are internal IPs for the server itself (yours may look different). Again, use the external IP that is tagged near the username of your terminal within cloud. 
+
+And finally observing <font color="gree">**IMAGE 07**</font>, we see our web application reflecting the most recent external IP address we've been operating in within the last few commands. 
+
+<font color="gree">**IMAGE 07**</font>
+![i06](pics/i07_web_application.png)
+
+
+## Remarks
+
+This walkthrough has demonstrated how to spin up an instance on AWS and also how to deploy a small web applicaiton on AWS. This application works with the reliance on a development of tight coupling which is not scalable practice. It removes the need for multi-instance deployment to seperate backend and frontend development, where backend may call to a database. However, as a proof of concept we show that this method of operation works from the perspective of experimentation.
+
+# BONUS Installing the AWS CLI
 
 This section discusses the installation of the AWS CLI interface which can be used optimally for shell scripts. [The official guide for installation could be found from this link.](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 There are several unique commands that can be used to download a form of the AWS CLI. For this case, we leverage the commands and steps to install the CLI on MacOS for "All Users". Observe the next few commands. Take note of the colors of out <font color="skyblue">**INPUTS**</font>. It's best recommended to do this in a new terminal. 
 
-<font color="skyblue">**INPUT 05**</font>
+<font color="skyblue">**INPUT 10**</font>
 
 ```
 (base) chriskuzemka@Mac ~ % curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 sudo installer -pkg AWSCLIV2.pkg -target /
 ```
 
-<font color="gold">**OUTPUT 05**</font>
+<font color="gold">**OUTPUT 10**</font>
 
 ```
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -233,14 +371,14 @@ installer: Installing at base path /
 installer: The install was successful.
 ```
 
-<font color="skyblue">**INPUT 06**</font>
+<font color="skyblue">**INPUT 11**</font>
 
 ```
 (base) chriskuzemka@Mac ~ % which aws
 aws --version
 ```
 
-<font color="gold">**OUTPUT 06**</font>
+<font color="gold">**OUTPUT 11**</font>
 
 ```
 /usr/local/bin/aws
@@ -249,35 +387,35 @@ aws-cli/2.28.2 Python/3.13.4 Darwin/24.5.0 exe/x86_64
 
 Now that we verified the installation of AWS CLI, we want to authenticate our access to our account. If following along the AWS CLI installation, you will notice that it shall recommend you use an IAM to access your instances from terminal with the CLI. However, this isn't necessary and for our case, we won't be doing such. It is possible for us to make this access key as a root user. 
 
-<font color="gree">**IMAGE 07**</font>
-![i06](pics/i07_redacted_account_details.png)
-
-Based off <font color="gree">**IMAGE 07**</font>, you will want to open your AWS portal and navigate to the top right to find "Security credentials". This will bring you to a new menu where you can generate various forms of keys and assign different roles. Scroll down...
-
 <font color="gree">**IMAGE 08**</font>
-![i06](pics/i08_create_access_key_menu.png)
+![i06](pics/i08_redacted_account_details.png)
+
+Based off <font color="gree">**IMAGE 08**</font>, you will want to open your AWS portal and navigate to the top right to find "Security credentials". This will bring you to a new menu where you can generate various forms of keys and assign different roles. Scroll down...
 
 <font color="gree">**IMAGE 09**</font>
-![i06](pics/i09_root_user_access_key_creation.png)
-
-The above <font color="gree">**IMAGE 08**</font> displays a sub-menu in your scroll that has the option to create the access key and when clicking on the transparent "Create access key" on the top right, you'll open a new menu that looks like the above <font color="gree">**IMAGE 09**</font>. Note that AWS is warning against the use of a root access key. This is not an issue for us to resolve today, but it is important to learn how to set up an IAM to allow flexible access among multiple developers onto a single server. 
-
-Check the box and proceed with clicking the golden colored "Create access key" button on the bottom right of your screen as shown in <font color="gree">**IMAGE 09**</font>
+![i06](pics/i09_create_access_key_menu.png)
 
 <font color="gree">**IMAGE 10**</font>
-![i06](pics/i10_root_user_access_keys.png)
+![i06](pics/i10_root_user_access_key_creation.png)
 
-Now you shoud find yourself at a new page that displays your access keys. **THIS IS VERY SENSITIVE INFORMATION.** For the sake of this documentation, the access keys were redacted from <font color="gree">**IMAGE 10**</font>. Keep this page open for now and do not close it until you enter them as credentials into your terminal. 
+The above <font color="gree">**IMAGE 08**</font> displays a sub-menu in your scroll that has the option to create the access key and when clicking on the transparent "Create access key" on the top right, you'll open a new menu that looks like the above <font color="gree">**IMAGE 10**</font>. Note that AWS is warning against the use of a root access key. This is not an issue for us to resolve today, but it is important to learn how to set up an IAM to allow flexible access among multiple developers onto a single server. 
+
+Check the box and proceed with clicking the golden colored "Create access key" button on the bottom right of your screen as shown in <font color="gree">**IMAGE 10**</font>
+
+<font color="gree">**IMAGE 11**</font>
+![i06](pics/i11_root_user_access_keys.png)
+
+Now you shoud find yourself at a new page that displays your access keys. **THIS IS VERY SENSITIVE INFORMATION.** For the sake of this documentation, the access keys were redacted from <font color="gree">**IMAGE 11**</font>. Keep this page open for now and do not close it until you enter them as credentials into your terminal. 
 
 The next local <font color="skyblue">**INPUTS**</font> and <font color="gold">**OUTPUTS**</font> will showcase where you must enter these credentials. Observe below. 
 
 
-<font color="skyblue">**INPUT 07**</font>
+<font color="skyblue">**INPUT 12**</font>
 ```
 (base) chriskuzemka@Mac ~ % aws configure  
 ```
 
-<font color="gold">**OUTPUTS 07**</font>
+<font color="gold">**OUTPUTS 12**</font>
 ```
 AWS Access Key ID [None]:     <your access key ID>
 AWS Secret Access Key [None]: <your secret key>
@@ -287,20 +425,24 @@ Default output format [None]: json
 
 Above, we have opened our own local configuration file that is set with the AWS CLI. Corresponding to the incremental outputs of <font color="gold">**OUTPUTS 07**</font> (which are truncated samples of what you would see), enter the credentials where appropriate. 
 
-AWS states best practices for how to manage these keys, inclusive of the option to download a `.csv` file for them. If you try to change this page, select "Done", or close your browser then AWS will provide you a warning if you chose not to download their `.csv` file. The "Secret acces key" in particular will not be stored anywhere within your portal and effectively will be lost remotely. However, should you completely lose this key and not have you configuration file not properly set, this is not the biggest issue. So long as you are signed into your account as a root user, you have the power through the portal to deactivate and delete keys within the same page "Security" page and sub-menu shown per <font color="gree">**IMAGE 08**</font>. 
+AWS states best practices for how to manage these keys, inclusive of the option to download a `.csv` file for them. If you try to change this page, select "Done", or close your browser then AWS will provide you a warning if you chose not to download their `.csv` file. The "Secret acces key" in particular will not be stored anywhere within your portal and effectively will be lost remotely. However, should you completely lose this key and not have you configuration file not properly set, this is not the biggest issue. So long as you are signed into your account as a root user, you have the power through the portal to deactivate and delete keys within the same page "Security" page and sub-menu shown per <font color="gree">**IMAGE 09**</font>. 
 
 Regarding setting the location, note that earlier we specified the region much earlier in this documentation. Also note in <font color="gree">**IMAGE 11**</font>, within our instances page that the location of our VM is set to `us-east-1a`. In our testing (which may be different for you), we initially applied the full server location of `us-east-1a` for this credential. This yielded a broken URL endpoint. What fixes this issue is to remove the suffix character `a`. This properly set the region of our instance. You may experience a similar issue and this correct way of setting a sup-region corresponding to the sub-region of your server may fix any potential issues. 
 
 Finally, you can specify the output format which is nothing more than how information around your instances is displayed in terminal. It will not affect any web application you wish to deploy unless you are using a script that directly must wrangle the information output from the AWS CLI. In this case, we left this as default which was `json` output. 
 
-<font color="gree">**IMAGE 11**</font>
-![i06](pics/i11_instance_location.png)
+<font color="gree">**IMAGE 12**</font>
+![i06](pics/i12_instance_location.png)
 
 If this was all set properly, you can now see your instance(s) by running the next input..
 
-<font color="skyblue">**INPUT 08**</font>
+<font color="skyblue">**INPUT 13**</font>
 ```
 (base) chriskuzemka@Mac ~ % aws ec2 describe-instances
 ```
 
 This command should yield a very large JSON formatted output describing qualities of your instance. 
+
+## Remarks
+
+AWS CLI is different from Google Cloud's CLI (`gcloud`) in that it is more "atomized." `gcloud` has a nice structure that allows one to cleanly input commands to kick start applications simplistically through the use of streamlined `gcloud` commands. With web application deployment on a VM instance, as shown above, we manually moved over our code without the use of the CLI. AWS encourages users to be very "surgical" with their usage of their products - which may be one reason why it is a major industry standard among companies today. Though there is still belief that with more time and research, AWS CLI could be used similarly to the way `gcloud` was used for the course to kick off web applications through more streamlined commands.  
